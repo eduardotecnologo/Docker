@@ -6,11 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
 <body>
-    <h1>FrontEnd</h1>
-
+    <div class="container">
+        <h1 style="text-align:center">Cadastro de Clientes</h1>
+        <hr>
+        <div>
+            <input name='id' type='hidden' />
+            <div class="form-group">
+                <label for="Name"></label>
+                <input class='form-control' name='name' placeholder='Digite o nome' />
+            </div>
+            <button class='btn btn-success' save>Salvar</button>
+        </div>
+        <table class="table" id="clients">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="clientsRows"></tbody>
+        </table>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        const API = 'http://localhost:3000' //Const - caminho da API
+        const createButton = (label, type) => {//Método Criar Btn
+            return $('<button>').addClass(`btn btn-${type}`).html(label)
+        }
+        const renderRows = clients => {//Renderiza a lista de Clientes
+                const rows = clients.map(client => {
+                    const updateButton = createButton('Atualizar', 'warning')
+                    const removeButton = createButton('Excluir', 'danger')
+                    return $('<tr>')
+                    .append($('<td>').append(client.name))
+                    .append($('<td>').append(updateButton).append(removeButton))
+                })
+                 $('#clientsRows').html(rows)
+        }
+        
+        const getClients = () => { //Método
+                $.ajax({
+                    url: `${API}/clients`,
+                    success: clients => {
+                        renderRows(clients)
+                    }
+                })
+               
+            }
+            //Método SaveClients
+        const saveClient = () => {
+                const _id = $('[name=id]').val()
+                const name = $('[name=name]').val()
+                $.ajax({
+                    method: _id ? 'PUT' : 'POST',
+                    url: `${API}/clients/${_id}`,
+                    data: _id ? { _id, name} : { name },
+                    success: getClients
+                })
+            }
+            //Start Get Clients
+        $(() => {
+            getClients()
+            $('[save]').click(saveClient)
+        })
+    </script>
 </body>
 
 </html>
