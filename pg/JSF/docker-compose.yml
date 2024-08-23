@@ -12,6 +12,8 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - jsf_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -26,7 +28,12 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - jsf_network
 
 volumes:
   pg_data:
   pgadmin_data:
+
+networks:
+  jsf_network:
